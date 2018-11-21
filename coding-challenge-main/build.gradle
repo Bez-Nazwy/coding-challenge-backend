@@ -1,0 +1,13 @@
+plugins {
+    id 'org.springframework.boot' version '2.0.6.RELEASE'
+}
+
+bootJar {
+    baseName = 'coding-challenge-main'
+    version = '1.0.0'
+    mainClassName = 'com.cs.main.Main'
+}
+
+dependencies {
+    compile project(':coding-challenge-core')
+}

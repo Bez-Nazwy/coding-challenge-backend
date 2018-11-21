@@ -1,0 +1,5 @@
+dependencies {
+    compile project(':coding-challenge-common')
+    compile libraries.springBootWebFlux
+    compile libraries.gson
+}

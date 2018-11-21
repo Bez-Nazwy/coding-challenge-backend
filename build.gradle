@@ -1,0 +1,19 @@
+subprojects {
+    apply plugin: 'java'
+    
+    sourceCompatibility = JavaVersion.VERSION_1_10
+    targetCompatibility = JavaVersion.VERSION_1_10
+}
+
+allprojects {
+    group 'com.cs'
+    version '1.0-SNAPSHOT'
+
+    apply from: "${rootDir}/libraries.gradle"
+    apply plugin: 'idea'
+
+    repositories {
+        mavenCentral()
+    }
+}
+

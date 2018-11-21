@@ -1,0 +1,18 @@
+ext {
+    SPRING_BOOT_VERSION = '2.0.6.RELEASE'
+    NETTY_VERSION = '4.1.30.Final'
+    REACTOR_NETTY_VERSION = '0.8.1.RELEASE'
+    JSON_VERSION = "20180813"
+    GUAVA_VERSION = "27.0-jre"
+    LOG4J_SLF4J_VERSION = "2.11.1"
+    GSON_VERSION = "2.8.5"
+
+    libraries = [
+            springBootWebFlux: "org.springframework.boot:spring-boot-starter-webflux:${SPRING_BOOT_VERSION}",
+            netty            : "io.netty:netty-all:${NETTY_VERSION}",
+            reactorNetty     : "io.projectreactor.netty:reactor-netty:${REACTOR_NETTY_VERSION}",
+            gson             : "com.google.code.gson:gson:${GSON_VERSION}",
+            guava            : "com.google.guava:guava:${GUAVA_VERSION}",
+            log4j_slf4j      : "org.apache.logging.log4j:log4j-slf4j-impl:${LOG4J_SLF4J_VERSION}"
+    ]
+}
