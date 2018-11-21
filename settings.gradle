@@ -1,5 +1,6 @@
 rootProject.name = 'coding-challenge'
 include 'coding-challenge-main'
-include 'coding-challenge-common'
+include 'coding-challenge-utils'
 include 'coding-challenge-core'
+include 'coding-challenge-domain'
 

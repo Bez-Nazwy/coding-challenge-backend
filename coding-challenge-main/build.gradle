@@ -10,5 +10,4 @@ bootJar {
 
 dependencies {
     compile project(':coding-challenge-core')
-    compile project(':coding-challenge-common')
 }

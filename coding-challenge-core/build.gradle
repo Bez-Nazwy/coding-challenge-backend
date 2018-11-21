@@ -1,5 +1,6 @@
 dependencies {
-    compile project(':coding-challenge-common')
+    compile project(':coding-challenge-domain')
     compile libraries.springBootWebFlux
+    compile libraries.springBootMongo
     compile libraries.gson
 }
