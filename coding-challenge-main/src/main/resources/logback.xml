@@ -5,14 +5,14 @@
     </encoder>
   </appender>
 
-  <logger name="io.netty" level="ERROR"/>
-  <logger name="org.springframework" level="INFO"/>
-  <logger name="reactor.netty" level="ERROR"/>
-  <logger name="org.hibernate" level="ERROR"/>
-  <logger name="org.synchronoss" level="ERROR"/>
-  <logger name="org.mongodb" level="INFO"/>
+  <!--<logger name="io.netty" level="ERROR"/>-->
+  <!--<logger name="org.springframework" level="INFO"/>-->
+  <!--<logger name="reactor.netty" level="ERROR"/>-->
+  <!--<logger name="org.hibernate" level="ERROR"/>-->
+  <!--<logger name="org.synchronoss" level="ERROR"/>-->
+  <logger name="org.mongodb" level="ERROR"/>
 
-  <root level="DEBUG">
+  <root level="INFO">
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>

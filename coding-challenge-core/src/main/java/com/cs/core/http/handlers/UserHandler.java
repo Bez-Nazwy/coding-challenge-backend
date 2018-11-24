@@ -8,9 +8,12 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 
 import com.cs.core.data.services.UserService;
 import com.cs.domain.User;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.dudycz.cs.UserSerializer;
+import com.google.gson.JsonElement;
+
 import java.net.URI;
+
+import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -22,6 +25,7 @@ import reactor.core.publisher.Mono;
 public class UserHandler {
 
     private UserService userService;
+    private JsonParser jsonParser = new JsonParser();
 
     @Autowired
     public UserHandler(UserService userService) {
@@ -47,7 +51,10 @@ public class UserHandler {
 
     public Mono<ServerResponse> addUser(ServerRequest request) {
         return request
-            .bodyToMono(User.class)
+            .bodyToMono(String.class)
+            .map(jsonParser::parse)
+            .map(JsonElement::getAsJsonObject)
+            .map(UserSerializer::deserialize)
             .flatMap(user -> userService.addUser(user))
             .flatMap(user -> created(constructResourceURI(request, user))
                 .build()
