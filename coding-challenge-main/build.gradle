@@ -1,6 +1,9 @@
 plugins {
     id 'org.springframework.boot' version '2.0.6.RELEASE'
+    id 'com.palantir.docker' version '0.20.1'
 }
+
+apply plugin: 'com.palantir.docker'
 
 bootJar {
     baseName = 'coding-challenge-main'
@@ -10,4 +13,12 @@ bootJar {
 
 dependencies {
     compile project(':coding-challenge-core')
+}
+
+docker {
+    dependsOn bootJar
+    copySpec.from("build/libs").into("build/libs")
+    name 'coding-challenge-rest'
+    tags 'latest'
+    dockerfile file('Dockerfile')
 }

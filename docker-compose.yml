@@ -1,7 +1,7 @@
 version: '3.1'
 
 services:
-  mongo:
+  mongo-db:
     container_name: mongo-db
     image: mongo
     ports:
@@ -12,5 +12,16 @@ services:
     image: mongo-express
     ports:
       - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo-db
+      - ME_CONFIG_MONGODB_PORT=27017
     depends_on:
-      - mongo
+      - mongo-db
+
+  coding-challenge:
+    container_name: coding-challenge-rest
+    image: coding-challenge-rest:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongo-db
