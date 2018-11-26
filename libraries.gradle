@@ -4,11 +4,16 @@ ext {
     JSON_VERSION = "20180813"
     GUAVA_VERSION = "27.0-jre"
     GSON_VERSION = "2.8.5"
+    JWT_VERSION = "0.9.1"
+    JAXB_VERSION = "2.3.1"
 
     libraries = [
-            springBootWebFlux: "org.springframework.boot:spring-boot-starter-webflux:${SPRING_BOOT_VERSION}",
-            springBootMongo  : "org.springframework.boot:spring-boot-starter-data-mongodb-reactive:${SPRING_BOOT_VERSION}",
-            gson             : "com.google.code.gson:gson:${GSON_VERSION}",
-            guava            : "com.google.guava:guava:${GUAVA_VERSION}"
+            springBootWebFlux : "org.springframework.boot:spring-boot-starter-webflux:${SPRING_BOOT_VERSION}",
+            springBootMongo   : "org.springframework.boot:spring-boot-starter-data-mongodb-reactive:${SPRING_BOOT_VERSION}",
+            springBootSecurity: "org.springframework.boot:spring-boot-starter-security:${SPRING_BOOT_VERSION}",
+            jwt               : "io.jsonwebtoken:jjwt:${JWT_VERSION}",
+            gson              : "com.google.code.gson:gson:${GSON_VERSION}",
+            guava             : "com.google.guava:guava:${GUAVA_VERSION}",
+            jaxb              : "javax.xml.bind:jaxb-api:${JAXB_VERSION}"
     ]
 }

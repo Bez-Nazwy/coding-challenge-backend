@@ -1,7 +1,7 @@
 package com.cs.core.data.services;
 
 import com.cs.core.data.repositories.UserRepository;
-import com.cs.domain.User;
+import com.cs.domain.auth.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +25,13 @@ public class UserService {
             .findById(id)
             .doOnError(err -> logger.warn("Error occurred when retrieving an user with id {}: {}",
                 id, err.getLocalizedMessage()));
+    }
+
+    public Mono<User> getUser(String username) {
+        return userRepository
+            .findByUsername(username)
+            .doOnError(err -> logger.warn("Error occurred when retrieving an user with username {}: {}",
+                username, err.getLocalizedMessage()));
     }
 
     public Flux<User> getAll() {

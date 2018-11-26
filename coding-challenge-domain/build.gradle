@@ -1,4 +1,5 @@
 dependencies {
+    compile libraries.springBootSecurity
     compile libraries.springBootMongo
     compile libraries.gson
 }

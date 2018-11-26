@@ -10,7 +10,7 @@
   <!--<logger name="reactor.netty" level="ERROR"/>-->
   <!--<logger name="org.hibernate" level="ERROR"/>-->
   <!--<logger name="org.synchronoss" level="ERROR"/>-->
-  <logger name="org.mongodb" level="INFO"/>
+  <logger name="org.mongodb" level="ERROR"/>
 
   <root level="INFO">
     <appender-ref ref="STDOUT" />
