@@ -32,9 +32,9 @@ public class ItemsHandler {
         var id = Integer.parseInt(request.pathVariable("id"));
         return itemService
             .getItem(id)
-            .flatMap(json -> ok()
+            .flatMap(item -> ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(fromObject(json))
+                .body(fromObject(item))
             )
             .switchIfEmpty(notFound().build());
     }
