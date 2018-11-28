@@ -21,30 +21,28 @@ public class UserService {
     }
 
     public Mono<User> getUser(int id) {
-        return userRepository
-            .findById(id)
-            .doOnError(err -> logger.warn("Error occurred when retrieving an user with id {}: {}",
-                id, err.getLocalizedMessage()));
+        return userRepository.findById(id);
     }
 
     public Mono<User> getUser(String username) {
-        return userRepository
-            .findByUsername(username)
-            .doOnError(err -> logger.warn("Error occurred when retrieving an user with username {}: {}",
-                username, err.getLocalizedMessage()));
+        return userRepository.findByUsername(username);
     }
 
     public Flux<User> getAll() {
-        return userRepository
-            .findAll()
-            .doOnError(err -> logger.warn("Error occurred when retrieving users: {}",
-                err.getLocalizedMessage()));
+        return userRepository.findAll();
     }
 
     public Mono<User> addUser(User user) {
         return userRepository
-            .save(user)
-            .doOnError(err -> logger.warn("Error occurred when adding an user: {}",
-                err.getLocalizedMessage()));
+            .existsByUsername(user.getUsername())
+            .flatMap(exists -> trySaveUser(user, exists));
+    }
+
+    private Mono<User> trySaveUser(User user, boolean exists) {
+        if (exists) {
+            throw new RuntimeException("User with given name already exists");
+        } else {
+            return userRepository.save(user);
+        }
     }
 }

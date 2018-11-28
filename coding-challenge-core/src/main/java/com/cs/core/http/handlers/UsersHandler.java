@@ -5,6 +5,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.cr
 
 import com.cs.core.data.services.UserService;
 import com.cs.domain.auth.User;
+import com.cs.utils.ResponseUtils;
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,12 +14,12 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 @Component
-public class UserHandler {
+public class UsersHandler {
 
     private UserService userService;
 
     @Autowired
-    public UserHandler(UserService userService) {
+    public UsersHandler(UserService userService) {
         this.userService = userService;
     }
 
@@ -27,7 +28,8 @@ public class UserHandler {
             .bodyToMono(User.class)
             .flatMap(userService::addUser)
             .flatMap(user -> created(constructResourceURI(request, user)).build())
-            .switchIfEmpty(badRequest().build());
+            .switchIfEmpty(badRequest().build())
+            .onErrorResume(ResponseUtils::handleReactiveError);
     }
 
     private URI constructResourceURI(ServerRequest request, User user) {

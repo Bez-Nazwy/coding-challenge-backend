@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 public class ItemService {
 
     private final static Logger logger = LoggerFactory.getLogger(UserService.class);
-
     private ItemRepository itemRepository;
 
     @Autowired
@@ -22,26 +21,15 @@ public class ItemService {
     }
 
     public Mono<Item> getItem(int id) {
-        return itemRepository
-            .findById(id)
-            .doOnError(err -> logger.warn("Error occurred when retrieving item with id {}: {}",
-                id, err.getLocalizedMessage()));
+        return itemRepository.findById(id);
     }
 
 
     public Flux<Item> getAll() {
-        return itemRepository
-            .findAll()
-            .doOnError(err -> logger.warn("Error occurred when retrieving items: {}",
-                err.getLocalizedMessage()));
+        return itemRepository.findAll();
     }
 
     public Mono<Item> addItem(Item item) {
-        return itemRepository
-            .save(item)
-            .doOnError(err -> logger.warn("Error occurred when adding an item: {}",
-                err.getLocalizedMessage()));
+        return itemRepository.save(item);
     }
-
-
 }

@@ -1,7 +1,7 @@
 dependencies {
     compile project(':coding-challenge-domain')
     compile project(':coding-challenge-utils')
-    compile libraries.springBootWebFlux
     compile libraries.jwt
     compile libraries.jaxb
+    
 }

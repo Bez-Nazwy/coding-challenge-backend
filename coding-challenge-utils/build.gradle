@@ -1,3 +1,5 @@
 dependencies {
     compile project(':coding-challenge-domain')
+    compile libraries.springBootWebFlux
+    compile libraries.json
 }

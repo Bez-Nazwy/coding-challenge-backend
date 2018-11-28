@@ -6,8 +6,8 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.nest;
 
 import com.cs.core.http.handlers.AuthHandler;
-import com.cs.core.http.handlers.ItemHandler;
-import com.cs.core.http.handlers.UserHandler;
+import com.cs.core.http.handlers.ItemsHandler;
+import com.cs.core.http.handlers.UsersHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -26,14 +26,14 @@ public class HttpRouter {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> routeUsers(UserHandler handler) {
+    public RouterFunction<ServerResponse> routeUsers(UsersHandler handler) {
         return nest(path("/api/users"),
             RouterFunctions.route(POST("/"), handler::addUser)
         );
     }
 
     @Bean
-    public RouterFunction<ServerResponse> routeItems(ItemHandler handler) {
+    public RouterFunction<ServerResponse> routeItems(ItemsHandler handler) {
         return nest(path("/api/items"),
             RouterFunctions
                 .route(GET("/"), handler::getAll)

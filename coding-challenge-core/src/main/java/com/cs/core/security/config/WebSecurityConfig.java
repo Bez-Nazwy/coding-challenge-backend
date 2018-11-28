@@ -7,6 +7,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
@@ -38,5 +41,18 @@ public class WebSecurityConfig {
             .pathMatchers(HttpMethod.POST, "/api/users").permitAll()
             .anyExchange().authenticated()
             .and().build();
+    }
+
+    @Bean
+    CorsWebFilter corsFilter() {
+        var config = new CorsConfiguration();
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+
+        var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return new CorsWebFilter(source);
     }
 }

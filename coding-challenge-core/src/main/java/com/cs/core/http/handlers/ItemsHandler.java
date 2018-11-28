@@ -8,6 +8,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 
 import com.cs.core.data.services.ItemService;
 import com.cs.domain.Item;
+import com.cs.utils.ResponseUtils;
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,12 +18,12 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 @Component
-public class ItemHandler {
+public class ItemsHandler {
 
     private ItemService itemService;
 
     @Autowired
-    public ItemHandler(ItemService itemService) {
+    public ItemsHandler(ItemService itemService) {
         this.itemService = itemService;
     }
 
@@ -49,7 +50,8 @@ public class ItemHandler {
             .bodyToMono(Item.class)
             .flatMap(itemService::addItem)
             .flatMap(item -> created(constructResourceURI(request, item)).build())
-            .switchIfEmpty(badRequest().build());
+            .switchIfEmpty(badRequest().build())
+            .onErrorResume(ResponseUtils::handleReactiveError);
     }
 
     private URI constructResourceURI(ServerRequest request, Item item) {
