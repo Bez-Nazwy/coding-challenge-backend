@@ -13,6 +13,9 @@ public class CorsConfiguration implements WebFluxConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry
             .addMapping("/**")
-            .allowedMethods("*");
+            .allowedOrigins("*")
+            .allowedMethods("*")
+            .allowedHeaders("*");
+
     }
 }
