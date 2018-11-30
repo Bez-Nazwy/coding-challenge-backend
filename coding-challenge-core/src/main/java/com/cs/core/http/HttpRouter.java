@@ -6,7 +6,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.nest;
 
 import com.cs.core.http.handlers.AuthHandler;
-import com.cs.core.http.handlers.ItemsHandler;
+import com.cs.core.http.handlers.PatientHandler;
 import com.cs.core.http.handlers.UsersHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,12 +33,11 @@ public class HttpRouter {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> routeItems(ItemsHandler handler) {
-        return nest(path("/api/items"),
+    public RouterFunction<ServerResponse> routePatients(PatientHandler handler) {
+        return nest(path("/api/patients"),
             RouterFunctions
-                .route(GET("/"), handler::getAll)
-                .andRoute(GET("/{id}"), handler::getItem)
-                .andRoute(POST("/"), handler::addItem)
+                .route(GET("/{doctor}"), handler::getPatientList)
+                .andRoute(POST("/"), handler::addPatient)
         );
     }
 }
