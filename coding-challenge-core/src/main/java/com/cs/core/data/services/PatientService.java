@@ -3,9 +3,12 @@ package com.cs.core.data.services;
 import com.cs.core.data.repositories.PatientRepository;
 import com.cs.domain.Doctor;
 import com.cs.domain.Patient;
+import com.cs.domain.auth.PatientCredentials;
+import com.cs.domain.auth.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,11 +19,16 @@ import java.util.Comparator;
 public class PatientService {
 
     private final static Logger logger = LoggerFactory.getLogger(UserService.class);
+
+    private static int nextNumber = 0;
     private PatientRepository patientRepository;
+    private PatientCredentialsService patientCredentialsService;
 
     @Autowired
-    public PatientService(PatientRepository patientRepository) {
+    public PatientService(PatientRepository patientRepository,
+                          PatientCredentialsService patientCredentialsService) {
         this.patientRepository = patientRepository;
+        this.patientCredentialsService = patientCredentialsService;
     }
 
     public Mono<Patient> getPatient(String id) {
@@ -34,7 +42,12 @@ public class PatientService {
             .sort(Comparator.comparing(Patient::getPriority));
     }
 
-    public Mono<Patient> addPatient(Patient patient) {
-        return patientRepository.save(patient);
+
+    public Mono<PatientCredentials> addPatient(Patient patient) {
+
+        //todo connect patient creadentials with patient
+        return patientRepository
+            .save(patient)
+            .flatMap(p -> patientCredentialsService.addPatientCredentials(nextNumber++));
     }
 }

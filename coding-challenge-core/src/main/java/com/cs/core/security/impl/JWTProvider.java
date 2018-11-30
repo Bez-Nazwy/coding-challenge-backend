@@ -6,16 +6,14 @@ import com.cs.domain.auth.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class JWTProvider {
@@ -29,31 +27,23 @@ public class JWTProvider {
 
     public String generateToken(User user) {
         var claims = new HashMap<String, Object>();
-        claims.put("role", user.getRoles());
+        claims.put("roles", user.getRoles());
         return doGenerateToken(claims, user.getUsername());
     }
 
     public String generateToken(PatientCredentials patientCredentials) {
-
-        return doGenerateToken(patientCredentials.getPatientNumber());
+        var claims = new HashMap<String, Object>();
+        claims.put("roles", Collections.singletonList(Role.ROLE_USER));
+        return doGenerateToken(claims, String.valueOf(patientCredentials.getPatientNumber()));
     }
 
-    private String doGenerateToken(int patientNumber) {
-        var expiration = Long.parseLong(expirationTime);
-        var expirationDate = Instant.now().plus(Duration.ofSeconds(expiration));
-        return Jwts.builder()
-                .setSubject(String.valueOf(patientNumber))
-                .setExpiration(Date.from(expirationDate))
-                .signWith(SignatureAlgorithm.HS512, secret)
-                .compact();
-    }
 
-    private String doGenerateToken(Map<String, Object> claims, String username) {
+    private String doGenerateToken(Map<String, Object> claims, String subject) {
         var expiration = Long.parseLong(expirationTime);
         var expirationDate = Instant.now().plus(Duration.ofSeconds(expiration));
         return Jwts.builder()
             .setClaims(claims)
-            .setSubject(username)
+            .setSubject(subject)
             .setExpiration(Date.from(expirationDate))
             .signWith(SignatureAlgorithm.HS512, secret)
             .compact();
@@ -72,7 +62,7 @@ public class JWTProvider {
     }
 
     private List<Role> getRoles(String token) {
-        return ((List<String>) (getClaims(token).get("role", List.class)))
+        return ((List<String>) (getClaims(token).get("roles", List.class)))
             .stream()
             .map(Role::valueOf)
             .collect(Collectors.toList());

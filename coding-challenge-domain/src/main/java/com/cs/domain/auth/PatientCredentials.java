@@ -13,14 +13,15 @@ public class PatientCredentials { //todo co z interfejsem UserDetails
     private int patientNumber;
     private String password;
 
-    public PatientCredentials(){ }
+    public PatientCredentials() {
+    }
 
     public PatientCredentials(int patientNumber) {
         this.patientNumber = patientNumber;
         this.password = PasswordGenerator.generatePassword(6,
-                PasswordGenerator.ALPHA+
-                        PasswordGenerator.NUMERIC+
-                        PasswordGenerator.ALPHA_CAPS);
+            PasswordGenerator.ALPHA +
+                PasswordGenerator.NUMERIC +
+                PasswordGenerator.ALPHA_CAPS);
     }
 
     public int getPatientNumber() {
@@ -29,5 +30,9 @@ public class PatientCredentials { //todo co z interfejsem UserDetails
 
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String newPassword) {
+        this.password = newPassword;
     }
 }

@@ -33,8 +33,12 @@ public class AuthHandler {
     private BCryptPasswordEncoder encoder;
 
     @Autowired
-    public AuthHandler(UserService userService, JWTProvider jwtProvider, BCryptPasswordEncoder encoder) {
+    public AuthHandler(UserService userService,
+                       PatientCredentialsService patientCredentialsService,
+                       JWTProvider jwtProvider,
+                       BCryptPasswordEncoder encoder) {
         this.userService = userService;
+        this.patientCredentialsService = patientCredentialsService;
         this.jwtProvider = jwtProvider;
         this.encoder = encoder;
     }
@@ -42,14 +46,14 @@ public class AuthHandler {
     public Mono<ServerResponse> authenticateMobileUser(ServerRequest request) {
 
         return request
-                .bodyToMono(PatientCredentials.class)
-                .flatMap(req -> patientCredentialsService
-                    .getPatientCredentials(req.getPatientNumber())
-                    .flatMap(credentials -> validateCredentialsPassword(req, credentials))
-                )
-                .flatMap(this::constructTokenResponse)
-                .switchIfEmpty(constructInvalidUserResponse())
-                .onErrorResume(ResponseUtils::handleReactiveError);
+            .bodyToMono(PatientCredentials.class)
+            .flatMap(req -> patientCredentialsService
+                .getPatientCredentials(req.getPatientNumber())
+                .flatMap(creds -> validateCredentialsPassword(req, creds))
+            )
+            .flatMap(this::constructTokenResponse)
+            .switchIfEmpty(constructInvalidUserResponse())
+            .onErrorResume(ResponseUtils::handleReactiveError);
     }
 
     public Mono<ServerResponse> authenticateWebUser(ServerRequest request) {
@@ -73,7 +77,7 @@ public class AuthHandler {
     }
 
     private Mono<String> validateCredentialsPassword(PatientCredentials authRequest, PatientCredentials patientCredentials) {
-        if (encoder.matches(authRequest.getPassword(), patientCredentials.getPassword())) {
+        if (authRequest.getPassword().equals(patientCredentials.getPassword())) {
             return Mono.just(jwtProvider.generateToken(patientCredentials));
         } else {
             return Mono.empty();

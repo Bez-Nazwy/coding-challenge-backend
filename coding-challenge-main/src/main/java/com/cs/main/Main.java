@@ -20,8 +20,8 @@ public class Main {
     }
 
     @Bean
-    public Disposable createSampleNurseAccount(UserService userService, BCryptPasswordEncoder encoder) {
-        var user = new User("nurse", encoder.encode("nurse123"));
+    public Disposable createSampleNurseAccount(UserService userService) {
+        var user = new User("nurse","nurse123");
 
         return userService
             .addUser(user)

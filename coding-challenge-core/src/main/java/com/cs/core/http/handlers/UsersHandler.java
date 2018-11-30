@@ -30,15 +30,10 @@ public class UsersHandler {
     public Mono<ServerResponse> addUser(ServerRequest request) {
         return request
             .bodyToMono(User.class)
-            .doOnNext(this::encodeUserPassword)
             .flatMap(userService::addUser)
             .flatMap(user -> created(constructResourceURI(request, user)).build())
             .switchIfEmpty(badRequest().build())
             .onErrorResume(ResponseUtils::handleReactiveError);
-    }
-
-    private void encodeUserPassword(User user) {
-        user.setPassword(encoder.encode(user.getPassword()));
     }
 
     private URI constructResourceURI(ServerRequest request, User user) {

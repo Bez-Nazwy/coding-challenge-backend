@@ -49,12 +49,8 @@ public class PatientHandler {
         return request
             .bodyToMono(Patient.class)
             .flatMap(patientService::addPatient)
-            .flatMap(patient -> created(constructResourceURI(request, patient)).build())
+            .flatMap(patientCreds -> ok().body(fromObject(patientCreds)))
             .switchIfEmpty(badRequest().build())
             .onErrorResume(ResponseUtils::handleReactiveError);
-    }
-
-    private URI constructResourceURI(ServerRequest request, Patient patient) {
-        return request.uri().resolve("/" + patient.getId());
     }
 }

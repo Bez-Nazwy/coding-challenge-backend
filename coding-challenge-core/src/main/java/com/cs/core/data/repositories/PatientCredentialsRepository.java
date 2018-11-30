@@ -8,5 +8,5 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface PatientCredentialsRepository extends ReactiveMongoRepository<PatientCredentials, Integer> {
 
-    Mono<PatientCredentials> findPatientCredentialsByNumber(int patientNumber);
+    Mono<PatientCredentials> findPatientCredentialsByPatientNumber(int patientNumber);
 }
