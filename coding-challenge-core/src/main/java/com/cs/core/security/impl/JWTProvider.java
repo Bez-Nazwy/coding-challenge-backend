@@ -1,5 +1,6 @@
 package com.cs.core.security.impl;
 
+import com.cs.domain.auth.PatientCredentials;
 import com.cs.domain.auth.Role;
 import com.cs.domain.auth.User;
 import io.jsonwebtoken.Claims;
@@ -30,6 +31,21 @@ public class JWTProvider {
         var claims = new HashMap<String, Object>();
         claims.put("role", user.getRoles());
         return doGenerateToken(claims, user.getUsername());
+    }
+
+    public String generateToken(PatientCredentials patientCredentials) {
+
+        return doGenerateToken(patientCredentials.getPatientNumber());
+    }
+
+    private String doGenerateToken(int patientNumber) {
+        var expiration = Long.parseLong(expirationTime);
+        var expirationDate = Instant.now().plus(Duration.ofSeconds(expiration));
+        return Jwts.builder()
+                .setSubject(String.valueOf(patientNumber))
+                .setExpiration(Date.from(expirationDate))
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
     }
 
     private String doGenerateToken(Map<String, Object> claims, String username) {

@@ -1,8 +1,10 @@
 package com.cs.core.http.handlers;
 
+import com.cs.core.data.services.PatientCredentialsService;
 import com.cs.core.data.services.UserService;
 import com.cs.core.security.impl.JWTProvider;
-import com.cs.domain.auth.AuthRequest;
+import com.cs.domain.auth.AuthWebRequest;
+import com.cs.domain.auth.PatientCredentials;
 import com.cs.domain.auth.User;
 import com.cs.utils.ResponseUtils;
 import org.json.JSONObject;
@@ -26,6 +28,7 @@ public class AuthHandler {
     private static final Logger logger = LoggerFactory.getLogger(AuthHandler.class);
 
     private UserService userService;
+    private PatientCredentialsService patientCredentialsService;
     private JWTProvider jwtProvider;
     private BCryptPasswordEncoder encoder;
 
@@ -36,21 +39,42 @@ public class AuthHandler {
         this.encoder = encoder;
     }
 
-    public Mono<ServerResponse> authenticate(ServerRequest request) {
+    public Mono<ServerResponse> authenticateMobileUser(ServerRequest request) {
+
         return request
-            .bodyToMono(AuthRequest.class)
+                .bodyToMono(PatientCredentials.class)
+                .flatMap(req -> patientCredentialsService
+                    .getPatientCredentials(req.getPatientNumber())
+                    .flatMap(credentials -> validateCredentialsPassword(req, credentials))
+                )
+                .flatMap(this::constructTokenResponse)
+                .switchIfEmpty(constructInvalidUserResponse())
+                .onErrorResume(ResponseUtils::handleReactiveError);
+    }
+
+    public Mono<ServerResponse> authenticateWebUser(ServerRequest request) {
+        return request
+            .bodyToMono(AuthWebRequest.class)
             .flatMap(req -> userService
                 .getUser(req.getUsername())
-                .flatMap(user -> validatePassword(req, user))
+                .flatMap(user -> validateUserPassword(req, user))
             )
             .flatMap(this::constructTokenResponse)
             .switchIfEmpty(constructInvalidUserResponse())
             .onErrorResume(ResponseUtils::handleReactiveError);
     }
 
-    private Mono<String> validatePassword(AuthRequest authRequest, User user) {
+    private Mono<String> validateUserPassword(AuthWebRequest authRequest, User user) {
         if (encoder.matches(authRequest.getPassword(), user.getPassword())) {
             return Mono.just(jwtProvider.generateToken(user));
+        } else {
+            return Mono.empty();
+        }
+    }
+
+    private Mono<String> validateCredentialsPassword(PatientCredentials authRequest, PatientCredentials patientCredentials) {
+        if (encoder.matches(authRequest.getPassword(), patientCredentials.getPassword())) {
+            return Mono.just(jwtProvider.generateToken(patientCredentials));
         } else {
             return Mono.empty();
         }

@@ -18,10 +18,18 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class HttpRouter {
 
     @Bean
-    public RouterFunction<ServerResponse> routeAuth(AuthHandler handler) {
-        return nest(path("/api/auth"),
+    public RouterFunction<ServerResponse> routeWebAuth(AuthHandler handler) {
+        return nest(path("/api/web/auth"),
             RouterFunctions
-                .route(POST("/"), handler::authenticate)
+                .route(POST("/"), handler::authenticateWebUser)
+        );
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> routeMobileAuth(AuthHandler handler) {
+        return nest(path("/api/mobile/auth"),
+                RouterFunctions
+                        .route(POST("/"), handler::authenticateMobileUser)
         );
     }
 

@@ -1,14 +1,14 @@
 package com.cs.domain.auth;
 
-public class AuthRequest {
+public class AuthWebRequest {
 
     private String username;
     private String password;
 
-    public AuthRequest() {
+    public AuthWebRequest() {
     }
 
-    public AuthRequest(String username, String password) {
+    public AuthWebRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }
