@@ -96,7 +96,7 @@ public class AuthHandler {
 
     private Mono<ServerResponse> constructInvalidUserResponse() {
         var body = new JSONObject()
-            .put("message", "Invalid username and password combination")
+            .put("message", "Nieprawidłowa nazwa użytkownika lub hasło")
             .toString();
         return badRequest()
             .contentType(MediaType.APPLICATION_JSON)
