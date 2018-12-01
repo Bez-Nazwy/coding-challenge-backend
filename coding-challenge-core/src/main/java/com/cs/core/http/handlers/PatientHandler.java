@@ -76,12 +76,17 @@ public class PatientHandler {
             .flatMapMany(doctor -> patientService.getPatientList(doctor))
             .filter(p -> p.getPriority() < patient.get().getPriority())
             .map(Patient::getServiceTime)
+            .switchIfEmpty(Mono.just(0))
             .reduce((time1, time2) -> time1 + time2)
-            .map(serviceTime -> body.put("serviceTime", serviceTime).toString())
+            .map(serviceTime -> body.put("serviceTime", System.currentTimeMillis() + minutesToMillis(serviceTime)).toString())
             .flatMap(b -> ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(fromObject(b))
             )
             .switchIfEmpty(badRequest().build());
+    }
+
+    private Long minutesToMillis(int minutes) {
+        return minutes * 60L * 1000L;
     }
 }
