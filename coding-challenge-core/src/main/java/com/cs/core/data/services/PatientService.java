@@ -97,4 +97,18 @@ public class PatientService {
             throw new RuntimeException("Patient with given id doesn't exists");
         }
     }
+
+    public Mono<Patient> addPatientWitoutCreatingNewCredentials(Patient patient) {
+        patient.setRegistrationTimestamp(System.currentTimeMillis());
+
+        return getPatientList(patient.getDoctor())
+                .filter(p -> p.getPriority() >= patient.getPriority())
+                .doOnNext(p -> p.setPriority(p.getPriority() + 1))
+                .flatMap(patientRepository::save)
+                .then(patientRepository
+                        .save(patient)
+                );
+    }
+
+
 }

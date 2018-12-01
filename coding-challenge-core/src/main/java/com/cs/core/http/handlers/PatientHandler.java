@@ -128,6 +128,28 @@ public class PatientHandler {
             .onErrorResume(err -> notFound().build());
     }
 
+    public Mono<ServerResponse> addPatientWitoutCreatingNewCredentials(ServerRequest request){
+
+        return request
+                .bodyToMono(Patient.class)
+                .flatMap(patientService::addPatientWitoutCreatingNewCredentials)
+                .flatMap(creds -> ok().body(fromObject(creds)))
+                .switchIfEmpty(badRequest().build())
+                .onErrorResume(ResponseUtils::handleReactiveError);
+
+    }
+
+
+    public Mono<ServerResponse> deletePatientWitoutCreatingNewCredentials(ServerRequest request){
+
+        var patientNumber = Integer.parseInt(request.pathVariable("patientNumber"));
+        return patientService
+                .deletePatient(patientNumber)
+                .flatMap(it -> ok().build())
+                .onErrorResume(err -> notFound().build());
+
+    }
+
     private Long minutesToMillis(int minutes) {
         return minutes * 60L * 1000L;
     }

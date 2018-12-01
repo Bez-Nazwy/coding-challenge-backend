@@ -41,6 +41,8 @@ public class HttpRouter {
                 .andRoute(POST("/postpone/{patientNumber}"), handler::postponePatient)
                 .andRoute(GET("/"), handler::getAllPatientLists)
                 .andRoute(DELETE("/{patientNumber}"), handler::deletePatient)
+                .andRoute(POST("/edit"), handler::addPatientWitoutCreatingNewCredentials)
+                .andRoute(DELETE("/edit/{patientNumber}"), handler::deletePatientWitoutCreatingNewCredentials)
         );
     }
 }
