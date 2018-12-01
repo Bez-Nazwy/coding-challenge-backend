@@ -50,9 +50,7 @@ public class PatientService {
     }
 
     public Mono<JSONObject> getAllPatientLists(){
-
         var json = new JSONObject();
-
         return Flux
                 .fromArray(Doctor.values())
                 .flatMap(doctor -> getPatientList(doctor)
@@ -64,6 +62,7 @@ public class PatientService {
     }
 
     public Mono<PatientCredentials> addPatient(Patient patient) {
+        patient.setRegistrationTimestamp(System.currentTimeMillis());
         var number = nextNumber++;
         patient.setPatientNumber(number);
         return patientRepository

@@ -3,8 +3,6 @@ package com.cs.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.print.Doc;
-
 @Document(collection = "patients")
 public class Patient {
 
@@ -14,6 +12,7 @@ public class Patient {
     private String surname;
     private String diagnose;
     private int serviceTime;
+    private Long registrationTimestamp;
     private String peselNumber;
     private Doctor doctor;
     private int priority;
@@ -57,5 +56,17 @@ public class Patient {
 
     public void setPatientNumber(int patientNumber) {
         this.patientNumber = patientNumber;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public Long getRegistrationTimestamp() {
+        return registrationTimestamp;
+    }
+
+    public void setRegistrationTimestamp(Long registrationTimestamp) {
+        this.registrationTimestamp = registrationTimestamp;
     }
 }

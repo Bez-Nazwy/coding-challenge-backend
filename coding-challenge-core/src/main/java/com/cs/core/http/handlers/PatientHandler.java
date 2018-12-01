@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -76,17 +75,20 @@ public class PatientHandler {
             .flatMapMany(doctor -> patientService.getPatientList(doctor))
             .filter(p -> p.getPriority() < patient.get().getPriority())
             .map(Patient::getServiceTime)
-            .switchIfEmpty(Mono.just(0))
             .reduce((time1, time2) -> time1 + time2)
-            .map(serviceTime -> body.put("serviceTime", System.currentTimeMillis() + minutesToMillis(serviceTime)).toString())
+            .switchIfEmpty(Mono.just(0))
+            .map(serviceTime -> body.put(
+                "serviceTime",
+                patient.get().getRegistrationTimestamp() + minutesToMillis(serviceTime)).toString()
+            )
             .flatMap(b -> ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(fromObject(b))
             )
-            .switchIfEmpty(badRequest().build());
+            .onErrorResume(err -> notFound().build());
     }
 
-    public Mono<ServerResponse> deletePatient(ServerRequest request){
+    public Mono<ServerResponse> deletePatient(ServerRequest request) {
         var id = request.pathVariable("id");
         return patientService.deletePatient(id).flatMap(it -> ok().build()).switchIfEmpty(notFound().build());
     }
