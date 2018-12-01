@@ -1,7 +1,7 @@
 package com.cs.core.http.handlers;
 
+import com.cs.core.data.services.PatientCredentialsService;
 import com.cs.core.data.services.PatientService;
-import com.cs.core.data.services.UserService;
 import com.cs.domain.Doctor;
 import com.cs.domain.Patient;
 import com.cs.utils.ResponseUtils;
@@ -25,10 +25,13 @@ public class PatientHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(PatientHandler.class);
     private PatientService patientService;
+    private PatientCredentialsService patientCredentialsService;
 
     @Autowired
-    public PatientHandler(PatientService patientService) {
+    public PatientHandler(PatientService patientService,
+                          PatientCredentialsService patientCredentialsService) {
         this.patientService = patientService;
+        this.patientCredentialsService = patientCredentialsService;
     }
 
 
@@ -118,7 +121,9 @@ public class PatientHandler {
         var patientNumber = Integer.parseInt(request.pathVariable("patientNumber"));
         return patientService
             .deletePatient(patientNumber)
-                .doOnError(err -> logger.info("dupa erro " + err.getLocalizedMessage()))
+            .then(patientCredentialsService
+                .deletePatientCredentials(patientNumber)
+            )
             .flatMap(it -> ok().build())
             .onErrorResume(err -> notFound().build());
     }

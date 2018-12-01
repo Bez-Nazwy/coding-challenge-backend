@@ -3,7 +3,6 @@ package com.cs.core.data.services;
 import com.cs.core.data.repositories.PatientCredentialsRepository;
 import com.cs.domain.auth.PatientCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -18,7 +17,6 @@ public class PatientCredentialsService {
     }
 
     public Mono<PatientCredentials> getPatientCredentials(int patientNumber) {
-
         return patientCredentialsRepository
             .findPatientCredentialsByPatientNumber(patientNumber);
     }
@@ -26,5 +24,9 @@ public class PatientCredentialsService {
     public Mono<PatientCredentials> addPatientCredentials(int patientNumber) {
         var patientCredentials = new PatientCredentials(patientNumber);
         return patientCredentialsRepository.save(patientCredentials);
+    }
+    public Mono<Integer> deletePatientCredentials(int patientNumber) {
+        return patientCredentialsRepository
+            .deleteByPatientNumber(patientNumber);
     }
 }
