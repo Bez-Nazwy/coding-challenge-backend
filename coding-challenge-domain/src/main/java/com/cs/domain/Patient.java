@@ -17,6 +17,7 @@ public class Patient {
     private String peselNumber;
     private Doctor doctor;
     private int priority;
+    private int patientNumber;
 
     public String getId() {
         return id;
@@ -48,5 +49,13 @@ public class Patient {
 
     public int getPriority() {
         return priority;
+    }
+
+    public int getPatientNumber() {
+        return patientNumber;
+    }
+
+    public void setPatientNumber(int patientNumber) {
+        this.patientNumber = patientNumber;
     }
 }

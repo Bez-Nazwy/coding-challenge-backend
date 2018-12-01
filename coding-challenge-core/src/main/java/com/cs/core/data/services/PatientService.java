@@ -4,11 +4,9 @@ import com.cs.core.data.repositories.PatientRepository;
 import com.cs.domain.Doctor;
 import com.cs.domain.Patient;
 import com.cs.domain.auth.PatientCredentials;
-import com.cs.domain.auth.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -35,6 +33,10 @@ public class PatientService {
         return patientRepository.findById(id);
     }
 
+    public Mono<Patient> getPatient(int patientNumber) {
+        return patientRepository.findByPatientNumber(patientNumber);
+    }
+
     public Flux<Patient> getPatientList(Doctor doctor) {
         return patientRepository
             .findAll()
@@ -44,10 +46,10 @@ public class PatientService {
 
 
     public Mono<PatientCredentials> addPatient(Patient patient) {
-
-        //todo connect patient creadentials with patient
+        var number = nextNumber++;
+        patient.setPatientNumber(number);
         return patientRepository
             .save(patient)
-            .flatMap(p -> patientCredentialsService.addPatientCredentials(nextNumber++));
+            .flatMap(p -> patientCredentialsService.addPatientCredentials(number));
     }
 }

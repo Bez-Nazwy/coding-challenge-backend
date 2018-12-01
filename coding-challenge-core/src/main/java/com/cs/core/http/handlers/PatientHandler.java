@@ -4,6 +4,7 @@ import com.cs.core.data.services.PatientService;
 import com.cs.domain.Doctor;
 import com.cs.domain.Patient;
 import com.cs.utils.ResponseUtils;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.springframework.web.reactive.function.BodyInserters.fromObject;
 import static org.springframework.web.reactive.function.server.ServerResponse.*;
@@ -49,8 +50,31 @@ public class PatientHandler {
         return request
             .bodyToMono(Patient.class)
             .flatMap(patientService::addPatient)
-            .flatMap(patientCreds -> ok().body(fromObject(patientCreds)))
+            .flatMap(creds -> ok().body(fromObject(creds)))
             .switchIfEmpty(badRequest().build())
             .onErrorResume(ResponseUtils::handleReactiveError);
+    }
+
+    public Mono<ServerResponse> getPatientInfo(ServerRequest request) {
+        var patientNumber = Integer.parseInt(request.pathVariable("patientNumber"));
+        var body = new JSONObject();
+        var patient = new AtomicReference<Patient>();
+
+        return patientService
+            .getPatient(patientNumber)
+            .doOnNext(patient::set)
+            .doOnNext(p -> body.put("queueNumber", p.getPriority()))
+            .map(Patient::getDoctor)
+            .doOnNext(doctor -> body.put("doctor", doctor.name()))
+            .flatMapMany(doctor -> patientService.getPatientList(doctor))
+            .filter(p -> p.getPriority() < patient.get().getPriority())
+            .map(Patient::getServiceTime)
+            .reduce((time1, time2) -> time1 + time2)
+            .map(serviceTime -> body.put("serviceTime", serviceTime).toString())
+            .flatMap(b -> ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(fromObject(b))
+            )
+            .switchIfEmpty(badRequest().build());
     }
 }

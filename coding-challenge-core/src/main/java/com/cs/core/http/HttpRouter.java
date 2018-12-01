@@ -1,10 +1,5 @@
 package com.cs.core.http;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
-import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
-import static org.springframework.web.reactive.function.server.RequestPredicates.path;
-import static org.springframework.web.reactive.function.server.RouterFunctions.nest;
-
 import com.cs.core.http.handlers.AuthHandler;
 import com.cs.core.http.handlers.PatientHandler;
 import com.cs.core.http.handlers.UsersHandler;
@@ -13,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
+
+import static org.springframework.web.reactive.function.server.RequestPredicates.*;
+import static org.springframework.web.reactive.function.server.RouterFunctions.nest;
 
 @Configuration
 public class HttpRouter {
@@ -37,7 +35,8 @@ public class HttpRouter {
     public RouterFunction<ServerResponse> routePatients(PatientHandler handler) {
         return nest(path("/api/patients"),
             RouterFunctions
-                .route(GET("/{doctor}"), handler::getPatientList)
+                .route(GET("/{doctor:[a-z]+}"), handler::getPatientList)
+                .andRoute(GET("/{patientNumber:[0-9]+}"), handler::getPatientInfo)
                 .andRoute(POST("/"), handler::addPatient)
         );
     }
