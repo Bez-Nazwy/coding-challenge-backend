@@ -71,6 +71,16 @@ public class PatientService {
     }
 
     public Mono<Void> deletePatient(String id){
-        return patientRepository.deleteById(id);
+        return patientRepository
+                .existsById(id)
+                .flatMap(exists -> tryDeletePatient(id, exists));
+    }
+
+    private Mono<Void> tryDeletePatient(String id, boolean exists) {
+        if (exists) {
+            return patientRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Patient with given id doesn't exists");
+        }
     }
 }
