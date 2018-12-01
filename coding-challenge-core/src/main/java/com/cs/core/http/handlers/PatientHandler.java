@@ -5,6 +5,8 @@ import com.cs.domain.Doctor;
 import com.cs.domain.Patient;
 import com.cs.utils.ResponseUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.*;
 @Component
 public class PatientHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(PatientHandler.class);
     private PatientService patientService;
 
     @Autowired
@@ -59,6 +62,28 @@ public class PatientHandler {
             .flatMap(creds -> ok().body(fromObject(creds)))
             .switchIfEmpty(badRequest().build())
             .onErrorResume(ResponseUtils::handleReactiveError);
+    }
+
+    public Mono<ServerResponse> postponePatient(ServerRequest request) {
+        var patientNumber = Integer.parseInt(request.pathVariable("patientNumber"));
+        var patient = new AtomicReference<Patient>();
+
+        return patientService
+            .getPatient(patientNumber)
+            .doOnNext(patient::set)
+            .flatMapMany(p -> patientService.getPatientList(patient.get().getDoctor()))
+            .filter(p -> p.getPriority() == patient.get().getPriority() + 1)
+            .next()
+            .doOnNext(p -> p.setPriority(p.getPriority() - 1))
+            .flatMap(patientService::updatePatient)
+            .map(p -> {
+                var pat = patient.get();
+                pat.setPriority(pat.getPriority() + 1);
+                return pat;
+            })
+            .flatMap(patientService::updatePatient)
+            .flatMap(b -> ok().build())
+            .switchIfEmpty(badRequest().build());
     }
 
     public Mono<ServerResponse> getPatientInfo(ServerRequest request) {

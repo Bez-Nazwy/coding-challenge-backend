@@ -72,6 +72,10 @@ public class PatientService {
                 .flatMap(p -> patientCredentialsService.addPatientCredentials(number)));
     }
 
+    public Mono<Patient> updatePatient(Patient patient){
+        return patientRepository.save(patient);
+    }
+
     public Mono<Void> deletePatient(String id){
         return patientRepository
                 .existsById(id)
