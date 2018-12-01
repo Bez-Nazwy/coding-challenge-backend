@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono;
 public interface PatientRepository extends ReactiveMongoRepository<Patient, String> {
 
     Mono<Patient> findByPatientNumber(int patientNumber);
-    Mono<Patient> deletePatientById(String id);
+    Mono<Boolean> existsByPatientNumber(int patientNumber);
+    Mono<Long> deletePatientByPatientNumber(int patientNumber);
 
 }

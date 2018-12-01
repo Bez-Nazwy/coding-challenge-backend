@@ -40,7 +40,7 @@ public class HttpRouter {
                 .andRoute(POST("/"), handler::addPatient)
                 .andRoute(POST("/postpone/{patientNumber}"), handler::postponePatient)
                 .andRoute(GET("/"), handler::getAllPatientLists)
-                .andRoute(DELETE("/{id}"), handler::deletePatient)
+                .andRoute(DELETE("/{patientNumber}"), handler::deletePatient)
         );
     }
 }

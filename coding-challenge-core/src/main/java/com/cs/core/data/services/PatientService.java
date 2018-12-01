@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Comparator;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class PatientService {
@@ -76,15 +77,22 @@ public class PatientService {
         return patientRepository.save(patient);
     }
 
-    public Mono<Void> deletePatient(String id){
+    public Mono<Long> deletePatient(int patientNumber){
         return patientRepository
-                .existsById(id)
-                .flatMap(exists -> tryDeletePatient(id, exists));
+                .existsByPatientNumber(patientNumber)
+                .flatMap(exists -> tryDeletePatient(patientNumber, exists));
     }
 
-    private Mono<Void> tryDeletePatient(String id, boolean exists) {
+    private Mono<Long> tryDeletePatient(int patientNumber, boolean exists) {
         if (exists) {
-            return patientRepository.deleteById(id);
+            var patient = new AtomicReference<Patient>();
+            return getPatient(patientNumber)
+                    .doOnNext(patient::set)
+                    .flatMapMany(p -> getPatientList(p.getDoctor()))
+                    .filter(p -> p.getPriority() > patient.get().getPriority())
+                    .doOnNext(p -> p.setPriority(p.getPriority() - 1))
+                    .flatMap(patientRepository::save)
+                    .then(patientRepository.deletePatientByPatientNumber(patientNumber));
         } else {
             throw new RuntimeException("Patient with given id doesn't exists");
         }

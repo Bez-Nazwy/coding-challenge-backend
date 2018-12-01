@@ -1,6 +1,7 @@
 package com.cs.core.http.handlers;
 
 import com.cs.core.data.services.PatientService;
+import com.cs.core.data.services.UserService;
 import com.cs.domain.Doctor;
 import com.cs.domain.Patient;
 import com.cs.utils.ResponseUtils;
@@ -114,9 +115,10 @@ public class PatientHandler {
     }
 
     public Mono<ServerResponse> deletePatient(ServerRequest request) {
-        var id = request.pathVariable("id");
+        var patientNumber = Integer.parseInt(request.pathVariable("patientNumber"));
         return patientService
-            .deletePatient(id)
+            .deletePatient(patientNumber)
+                .doOnError(err -> logger.info("dupa erro " + err.getLocalizedMessage()))
             .flatMap(it -> ok().build())
             .onErrorResume(err -> notFound().build());
     }
