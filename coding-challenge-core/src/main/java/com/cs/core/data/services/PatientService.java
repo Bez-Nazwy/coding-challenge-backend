@@ -4,7 +4,6 @@ import com.cs.core.data.repositories.PatientRepository;
 import com.cs.domain.Doctor;
 import com.cs.domain.Patient;
 import com.cs.domain.auth.PatientCredentials;
-import com.cs.domain.auth.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -14,9 +13,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.stream.Collectors;
 
 @Service
 public class PatientService {
@@ -49,25 +46,30 @@ public class PatientService {
             .sort(Comparator.comparing(Patient::getPriority));
     }
 
-    public Mono<JSONObject> getAllPatientLists(){
+    public Mono<JSONObject> getAllPatientLists() {
         var json = new JSONObject();
         return Flux
-                .fromArray(Doctor.values())
-                .flatMap(doctor -> getPatientList(doctor)
-                    .collectList()
-                    .map(list -> json.put(doctor.name(), new JSONArray(list)))
-                )
-                .takeLast(1)
-                .next();
+            .fromArray(Doctor.values())
+            .flatMap(doctor -> getPatientList(doctor)
+                .collectList()
+                .map(list -> json.put(doctor.name(), new JSONArray(list)))
+            )
+            .takeLast(1)
+            .next();
     }
 
     public Mono<PatientCredentials> addPatient(Patient patient) {
-        patient.setRegistrationTimestamp(System.currentTimeMillis());
         var number = nextNumber++;
+        patient.setRegistrationTimestamp(System.currentTimeMillis());
         patient.setPatientNumber(number);
-        return patientRepository
-            .save(patient)
-            .flatMap(p -> patientCredentialsService.addPatientCredentials(number));
+
+        return getPatientList(patient.getDoctor())
+            .filter(p -> p.getPriority() >= patient.getPriority())
+            .doOnNext(p -> p.setPriority(p.getPriority() + 1))
+            .flatMap(patientRepository::save)
+            .then(patientRepository
+                .save(patient)
+                .flatMap(p -> patientCredentialsService.addPatientCredentials(number)));
     }
 
     public Mono<Void> deletePatient(String id){

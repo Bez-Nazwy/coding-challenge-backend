@@ -91,8 +91,9 @@ public class PatientHandler {
     public Mono<ServerResponse> deletePatient(ServerRequest request) {
         var id = request.pathVariable("id");
         return patientService
-                .deletePatient(id)
-                .flatMap(it -> ok().build()).onErrorResume(err->notFound().build());
+            .deletePatient(id)
+            .flatMap(it -> ok().build())
+            .onErrorResume(err -> notFound().build());
     }
 
     private Long minutesToMillis(int minutes) {
