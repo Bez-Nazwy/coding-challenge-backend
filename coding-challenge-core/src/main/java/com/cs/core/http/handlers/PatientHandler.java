@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -44,6 +45,12 @@ public class PatientHandler {
         return ok()
             .contentType(MediaType.APPLICATION_JSON)
             .body(patientService.getPatientList(doctor), Patient.class);
+    }
+
+    public Mono<ServerResponse> getAllPatientLists(ServerRequest request) {
+        return ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(patientService.getAllPatientLists().map(JSONObject::toString), String.class);
     }
 
     public Mono<ServerResponse> addPatient(ServerRequest request) {

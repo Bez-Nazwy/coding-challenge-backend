@@ -38,6 +38,7 @@ public class HttpRouter {
                 .route(GET("/{doctor:[a-z]+}"), handler::getPatientList)
                 .andRoute(GET("/{patientNumber:[0-9]+}"), handler::getPatientInfo)
                 .andRoute(POST("/"), handler::addPatient)
+                .andRoute(GET("/"), handler::getAllPatientLists)
         );
     }
 }
