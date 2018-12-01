@@ -86,6 +86,11 @@ public class PatientHandler {
             .switchIfEmpty(badRequest().build());
     }
 
+    public Mono<ServerResponse> deletePatient(ServerRequest request){
+        var id = request.pathVariable("id");
+        return patientService.deletePatient(id).flatMap(it -> ok().build()).switchIfEmpty(notFound().build());
+    }
+
     private Long minutesToMillis(int minutes) {
         return minutes * 60L * 1000L;
     }

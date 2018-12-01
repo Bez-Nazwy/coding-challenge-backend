@@ -70,4 +70,8 @@ public class PatientService {
             .save(patient)
             .flatMap(p -> patientCredentialsService.addPatientCredentials(number));
     }
+
+    public Mono<Void> deletePatient(String id){
+        return patientRepository.deleteById(id);
+    }
 }
